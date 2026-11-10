@@ -14,6 +14,8 @@ const HIT_SPEED := 1.5
 const PORT0 := 47420
 const NPORTS := 8
 const NET_TAG := "mnc1"
+const BUILD := "2026-11-10.2"
+const BOT_GRACE := 8.0   # seconds before practice dummies start kicking back
 const ALIVE := 0
 const FLYING := 1
 const GONE := 2
@@ -120,6 +122,12 @@ var opt_log := false
 var opt_autokick := false
 var opt_shot := ""
 var log_t := 0.0
+var last_note := ""
+var debug3d: Label3D
+var frames := 0
+var beat_t := 0.0
+var src_l := "-"
+var src_r := "-"
 
 
 func fwd_of(y: float) -> Vector3:
@@ -210,6 +218,15 @@ func _ready() -> void:
 	toast3d.position = Vector3(0, 0.28, -1.6)
 	toast3d.visible = false
 	cam.add_child(toast3d)
+	debug3d = Label3D.new()
+	debug3d.font_size = 28
+	debug3d.pixel_size = 0.0016
+	debug3d.modulate = Color("a9acd6")
+	debug3d.outline_size = 6
+	debug3d.no_depth_test = true
+	debug3d.render_priority = 10
+	debug3d.position = Vector3(0, -0.42, -1.6)
+	cam.add_child(debug3d)
 
 	var pname := ""
 	for arg in OS.get_cmdline_user_args():
@@ -232,9 +249,7 @@ func start_xr() -> void:
 	xr = XRServer.find_interface("OpenXR")
 	if xr != null and xr.is_initialized():
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
-		var vp := get_viewport()
-		vp.use_xr = true
-		vp.vrs_mode = Viewport.VRS_XR
+		get_viewport().use_xr = true
 		in_vr = true
 		me.body_visible = false
 		me.spin.visible = false
@@ -242,23 +257,15 @@ func start_xr() -> void:
 		hud.visible = false
 		hint.visible = false
 		origin.position = Vector3(me.x, 0, me.z)
-		if xr.has_signal("session_begun"):
-			xr.connect("session_begun", _on_session_begun)
+		note("xr started")
 	else:
 		in_vr = false
+		note("no headset, window mode")
 
 
-func _on_session_begun() -> void:
-	# ask for 90 Hz or better where the headset offers it
-	var rates = xr.call("get_available_display_refresh_rates")
-	var best := 0.0
-	if rates is Array:
-		for r in rates:
-			if float(r) >= 90.0 and float(r) <= 120.0 and (best == 0.0 or float(r) < best):
-				best = float(r)
-	if best > 0.0:
-		xr.set("display_refresh_rate", best)
-		Engine.physics_ticks_per_second = int(best)
+func note(msg: String) -> void:
+	last_note = msg
+	print("[%.1f] %s" % [now, msg])
 
 
 func build_world() -> void:
@@ -268,9 +275,6 @@ func build_world() -> void:
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 	env.ambient_light_color = Color("8fa3ff")
 	env.ambient_light_energy = 0.55
-	env.fog_enabled = true
-	env.fog_light_color = C_NIGHT
-	env.fog_density = 0.012
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
@@ -327,20 +331,22 @@ func build_world() -> void:
 	mesh_node(moon_mesh, moon_mat).position = MOON
 
 	# stars
-	var pts := PackedVector3Array()
-	for i in 500:
+	var star_quad := QuadMesh.new()
+	star_quad.size = Vector2(1.8, 1.8)
+	var star_mat := mat(C_MOON, true, true)
+	star_mat.billboard_mode = BaseMaterial3D.BILLBOARD_ENABLED
+	star_quad.material = star_mat
+	var mm := MultiMesh.new()
+	mm.transform_format = MultiMesh.TRANSFORM_3D
+	mm.mesh = star_quad
+	mm.instance_count = 400
+	for i in 400:
 		var az := randf() * TAU
 		var el := randf() * 1.4 + 0.08
-		pts.append(Vector3(cos(az) * cos(el), sin(el), sin(az) * cos(el)) * 500.0)
-	var arrays := []
-	arrays.resize(Mesh.ARRAY_MAX)
-	arrays[Mesh.ARRAY_VERTEX] = pts
-	var star_mesh := ArrayMesh.new()
-	star_mesh.add_surface_from_arrays(Mesh.PRIMITIVE_POINTS, arrays)
-	var star_mat := mat(C_MOON, true, true)
-	star_mat.use_point_size = true
-	star_mat.point_size = 3.0
-	mesh_node(star_mesh, star_mat)
+		mm.set_instance_transform(i, Transform3D(Basis(), Vector3(cos(az) * cos(el), sin(el), sin(az) * cos(el)) * 500.0))
+	var stars := MultiMeshInstance3D.new()
+	stars.multimesh = mm
+	add_child(stars)
 
 	# scoreboard on the edge of the ring
 	var panel := mesh_node(box(Vector3(4.4, 3.0, 0.1)), mat(Color("171b4a"), true, true))
@@ -624,6 +630,7 @@ func launch(e: Ent) -> bool:
 	var d := (Vector3(e.x + (randf() - 0.5) * 20.0, 10.0 + randf() * 20.0, e.z + 60.0) - MOON).normalized()
 	e.b = MOON + d * MR
 	e.c = (e.a + e.b) * 0.5 + Vector3(0, 28, 0)
+	note("launch " + e.name)
 	play("thwack", e == me)
 	play("scream", e == me)
 	if e == me:
@@ -632,6 +639,7 @@ func launch(e: Ent) -> bool:
 
 
 func explode(p: Vector3, loud: bool) -> void:
+	note("explode")
 	play("boom", loud)
 	var out := (p - MOON).normalized()
 	var parts := CPUParticles3D.new()
@@ -801,7 +809,9 @@ func nums(v, count: int) -> bool:
 func net_receive() -> void:
 	if not net_ok:
 		return
-	while udp.get_available_packet_count() > 0:
+	var budget := 200
+	while budget > 0 and udp.get_available_packet_count() > 0:
+		budget -= 1
 		var raw := udp.get_packet()
 		if raw.size() < 8 or raw.size() > 1400:
 			continue
@@ -836,6 +846,7 @@ func net_receive() -> void:
 				e.saw_fly = true
 				show_ent(e, false)
 			ents[id] = e
+			note("player joined: " + nm)
 			set_bots(false)
 			board_dirty = true
 		e.last_seen = now
@@ -897,20 +908,17 @@ func tracked_point(tracker_name: String, pose_names: Array) -> Variant:
 
 
 func find_foot(which: String) -> Variant:
-	# 1. dedicated foot trackers, 2. full-body tracking, 3. the hand controller strapped to that ankle
+	# 1. dedicated foot trackers, 2. the hand controller strapped to that ankle
 	var p = tracked_point("/user/vive_tracker_htcx/role/%s_foot" % which, ["default", "aim", "grip"])
 	if p != null:
+		_src = "tracker"
 		return p
-	for name in XRServer.get_trackers(XRServer.TRACKER_ANY):
-		if str(name).contains(which + "_foot"):
-			p = tracked_point(str(name), ["default", "aim", "grip"])
-			if p != null:
-				return p
-	var body := XRServer.get_tracker("/user/body_tracker") as XRBodyTracker
-	if body != null and body.has_tracking_data:
-		var joint := XRBodyTracker.JOINT_LEFT_FOOT if which == "left" else XRBodyTracker.JOINT_RIGHT_FOOT
-		return origin.global_transform * body.get_joint_transform(joint).origin
-	return tracked_point(which + "_hand", ["grip", "default", "aim"])
+	p = tracked_point(which + "_hand", ["grip", "default", "aim"])
+	_src = "controller" if p != null else "none"
+	return p
+
+
+var _src := "-"
 
 
 func stick() -> Vector2:
@@ -929,7 +937,9 @@ func update_vr(dt: float) -> void:
 	var hf := cam.global_transform.basis * Vector3.FORWARD
 	var hyaw := atan2(-hf.x, -hf.z)
 	var lf = find_foot("left")
+	src_l = _src
 	var rf = find_foot("right")
+	src_r = _src
 	if lf != null:
 		me.fl = lf
 	if rf != null:
@@ -1011,7 +1021,7 @@ func update_bot(b: Ent, dt: float) -> void:
 	var dz := me.z - b.z
 	var dist := sqrt(dx * dx + dz * dz)
 	b.rest -= dt
-	if me.st == ALIVE and dist < 5.5:
+	if now > BOT_GRACE and me.st == ALIVE and dist < 5.5:
 		b.yaw = atan2(-dx, -dz)
 		if dist > 0.95:
 			speed = 1.7
@@ -1161,6 +1171,16 @@ func _process(delta: float) -> void:
 			want.y = maxf(want.y, 1.5)
 			cam.look_at_from_position(cam.global_position.lerp(want, 0.2), me.b, Vector3.UP)
 
+	frames += 1
+	beat_t += delta
+	if beat_t >= 1.0:
+		var fps := frames / beat_t
+		frames = 0
+		beat_t = 0.0
+		var states := ["alive", "flying", "gone"]
+		var line := "build %s  t=%.0f  fps=%.0f  %s  feet L:%s R:%s  head=%.2f  players=%d  last: %s" % [BUILD, now, fps, states[me.st], src_l, src_r, me.h, ents.size() + 1, last_note]
+		debug3d.text = line
+		print(line)
 	if opt_log:
 		log_t += dt
 		if log_t > 2.0:
