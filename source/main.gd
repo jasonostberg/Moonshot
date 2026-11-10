@@ -14,7 +14,7 @@ const HIT_SPEED := 1.5
 const PORT0 := 47420
 const NPORTS := 8
 const NET_TAG := "mnc1"
-const BUILD := "2026-11-10.4"
+const BUILD := "2026-11-10.5"
 const BOT_GRACE := 8.0   # seconds before practice dummies start kicking back
 const ALIVE := 0
 const FLYING := 1
@@ -130,6 +130,7 @@ var wd: Thread
 var wd_stop := false
 # switches for narrowing a problem down (set remotely through the ARGS file)
 var test_stall := false
+var window_mode := "tiny"   # how the flat desktop window is put away in VR: tiny, min, keep
 var no_net := false
 var no_bots := false
 var no_audio := false
@@ -208,6 +209,8 @@ func _ready() -> void:
 			opt_shot = arg.substr(7)
 		elif arg.begins_with("--peer="):
 			extra_peers.append(arg.substr(7))
+		elif arg.begins_with("--window="):
+			window_mode = arg.substr(9)
 		elif arg == "--test-stall":
 			test_stall = true
 		elif arg == "--no-net":
@@ -315,11 +318,15 @@ func log_xr() -> void:
 	print("xr system: ", xr.get_system_info())
 	print("xr refresh: ", xr.get("display_refresh_rate"), "   available: ", xr.call("get_available_display_refresh_rates"))
 	print("xr play area mode: ", xr.get_play_area_mode(), "   tracking status: ", xr.get_tracking_status())
-	for sig in ["session_begun", "session_visible", "session_focussed", "session_stopping", "session_loss_pending", "instance_exiting", "pose_recentered"]:
+	for sig in ["session_begun", "session_synchronized", "session_visible", "session_focussed", "session_stopping", "session_loss_pending", "instance_exiting", "pose_recentered"]:
 		if xr.has_signal(sig):
 			xr.connect(sig, note.bind("xr signal: " + sig))
 	XRServer.tracker_added.connect(func(tn: StringName, type: int) -> void: note("tracker added: %s (type %d)" % [tn, type]))
 	XRServer.tracker_removed.connect(func(tn: StringName, type: int) -> void: note("tracker removed: %s (type %d)" % [tn, type]))
+	for tn in ["left_hand", "right_hand"]:
+		var t := XRServer.get_tracker(tn) as XRPositionalTracker
+		if t != null:
+			t.profile_changed.connect(func(role: String) -> void: note("%s controller profile: %s" % [tn, role]))
 	print("trackers at start: ", XRServer.get_trackers(XRServer.TRACKER_ANY).keys())
 
 
@@ -335,12 +342,32 @@ func start_xr() -> void:
 		hud.visible = false
 		hint.visible = false
 		origin.position = Vector3(me.x, 0, me.z)
+		put_window_away()
 		log_xr()
 		note("xr started")
 	else:
 		in_vr = false
 		print("xr interface found: ", xr != null)
 		note("no headset, window mode")
+
+
+func put_window_away() -> void:
+	# In a headset the picture goes to the eyes through OpenXR. The ordinary desktop window is
+	# only a mirror, and SteamOS shows any real window as a flat panel floating in the room,
+	# which also keeps the controllers pointed at that panel instead of the game.
+	# Keep the engine drawing even when no window is showing:
+	DisplayServer.register_additional_output(self)
+	var w := get_window()
+	print("window before: size=%s mode=%d" % [w.size, w.mode])
+	if window_mode == "tiny":
+		# a 1x1 borderless window that cannot take focus; the SteamOS compositor ignores those
+		w.borderless = true
+		w.unfocusable = true
+		w.min_size = Vector2i(1, 1)
+		w.size = Vector2i(1, 1)
+	elif window_mode == "min":
+		w.mode = Window.MODE_MINIMIZED
+	note("window mode: " + window_mode)
 
 
 func note(msg: String) -> void:
@@ -1325,7 +1352,7 @@ func _process(delta: float) -> void:
 		stage = "debug_label"
 		if not no_labels:
 			debug3d.text = line
-		print("%s  frame=%d  cam=%s  sent=%d" % [line, frame_no, cam.position.snappedf(0.01), sent_count])
+		print("%s  frame=%d  cam=%s  sent=%d" % [line, frame_no, cam.position.snappedf(0.01), sent_count] + ("  window=%s mode=%d" % [get_window().size, get_window().mode] if in_vr else ""))
 		if in_vr and (src_l == "none" or src_r == "none") and int(now) % 5 == 1:
 			for tn in ["left_hand", "right_hand"]:
 				var t := XRServer.get_tracker(tn) as XRPositionalTracker
