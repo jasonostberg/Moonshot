@@ -464,3 +464,5 @@ ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayre
 ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
 ptrace: Operation not permitted.
 == end thread dump ==
+STALL main loop stuck for 18 s  frame=104  stage=net_tx  last=xr signal: session_visible
+== launcher stopping: terminated by Steam or the system at 23:22:24 ==
