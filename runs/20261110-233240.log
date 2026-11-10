@@ -113,3 +113,10 @@ build 2026-11-10.5  t=9  fps=72  alive  feet L:none R:none  head=1.34  players=1
 [9.5] right foot source: controller
 build 2026-11-10.5  t=10  fps=72  alive  feet L:controller R:controller  head=1.34  players=1  last: right foot source: controller  frame=714  cam=(0.08, 1.34, 0.14)  sent=572  window=(1, 1) mode=0
 build 2026-11-10.5  t=11  fps=72  alive  feet L:controller R:controller  head=1.35  players=1  last: right foot source: controller  frame=787  cam=(0.03, 1.35, 0.17)  sent=628  window=(1, 1) mode=0
+build 2026-11-10.5  t=12  fps=72  alive  feet L:controller R:controller  head=1.35  players=1  last: right foot source: controller  frame=860  cam=(0.03, 1.35, 0.16)  sent=688  window=(1, 1) mode=0
+build 2026-11-10.5  t=13  fps=72  alive  feet L:controller R:controller  head=1.35  players=1  last: right foot source: controller  frame=933  cam=(0.04, 1.35, 0.17)  sent=744  window=(1, 1) mode=0
+build 2026-11-10.5  t=14  fps=72  alive  feet L:controller R:controller  head=1.32  players=1  last: right foot source: controller  frame=1006  cam=(0.05, 1.32, 0.14)  sent=804  window=(1, 1) mode=0
+build 2026-11-10.5  t=15  fps=72  alive  feet L:controller R:controller  head=1.31  players=1  last: right foot source: controller  frame=1079  cam=(0.04, 1.31, 0.08)  sent=864  window=(1, 1) mode=0
+build 2026-11-10.5  t=16  fps=72  alive  feet L:controller R:controller  head=1.29  players=1  last: right foot source: controller  frame=1152  cam=(0.02, 1.29, 0.07)  sent=920  window=(1, 1) mode=0
+[16.5] launch iamagamer
+build 2026-11-10.5  t=17  fps=72  flying  feet L:controller R:controller  head=1.30  players=1  last: launch iamagamer  frame=1225  cam=(-0.01, 1.35, -0.13)  sent=980  window=(1, 1) mode=0
