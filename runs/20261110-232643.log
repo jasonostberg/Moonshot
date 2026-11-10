@@ -92,3 +92,11 @@ WARNING: Object picking can't be used when stereo rendering, this will be turned
 [0.1] sender 2 opened: true
 [0.1] sender 3 opened: true
 [0.1] sender 4 opened: true
+build 2026-11-10.4  t=1  fps=57  alive  feet L:none R:none  head=1.35  players=1  last: sender 4 opened: true  frame=57  cam=(-0.03, 1.35, 0.06)  sent=44
+build 2026-11-10.4  t=2  fps=71  alive  feet L:none R:none  head=1.35  players=1  last: sender 4 opened: true  frame=128  cam=(-0.04, 1.35, 0.06)  sent=104
+  left_hand poses: ["default=missing", "aim=missing", "grip=missing", "palm=missing"]  profile: /interaction_profiles/none
+  right_hand poses: ["default=missing", "aim=missing", "grip=missing", "palm=missing"]  profile: /interaction_profiles/none
+build 2026-11-10.4  t=3  fps=72  alive  feet L:none R:none  head=1.35  players=1  last: sender 4 opened: true  frame=201  cam=(-0.03, 1.35, 0.06)  sent=160
+build 2026-11-10.4  t=4  fps=72  alive  feet L:none R:none  head=1.39  players=1  last: sender 4 opened: true  frame=274  cam=(-0.02, 1.39, 0.1)  sent=220
+build 2026-11-10.4  t=5  fps=72  alive  feet L:none R:none  head=1.36  players=1  last: sender 4 opened: true  frame=347  cam=(-0.05, 1.36, 0.08)  sent=276
+build 2026-11-10.4  t=6  fps=72  alive  feet L:none R:none  head=1.34  players=1  last: sender 4 opened: true  frame=420  cam=(-0.01, 1.34, 0.05)  sent=336
