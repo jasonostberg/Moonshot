@@ -113,3 +113,9 @@ build 2026-11-10.5  t=15  fps=72  alive  feet L:controller R:controller  head=1.
 build 2026-11-10.5  t=16  fps=72  alive  feet L:controller R:controller  head=1.37  players=1  last: explode  frame=1148  cam=(-0.02, 1.37, 0.03)  sent=916  window=(1, 1) mode=0
 [16.8] xr signal: session_visible
 build 2026-11-10.5  t=17  fps=72  alive  feet L:controller R:controller  head=1.36  players=1  last: xr signal: session_visible  frame=1221  cam=(-0.01, 1.36, 0.02)  sent=976  window=(1, 1) mode=0
+[17.8] launch iamagamer
+build 2026-11-10.5  t=18  fps=72  flying  feet L:controller R:controller  head=1.35  players=1  last: launch iamagamer  frame=1294  cam=(0.02, 1.35, 0.02)  sent=1036  window=(1, 1) mode=0
+build 2026-11-10.5  t=19  fps=72  flying  feet L:controller R:controller  head=1.35  players=1  last: launch iamagamer  frame=1367  cam=(0.02, 1.35, 0.02)  sent=1092  window=(1, 1) mode=0
+build 2026-11-10.5  t=20  fps=72  flying  feet L:controller R:controller  head=1.35  players=1  last: launch iamagamer  frame=1440  cam=(0.01, 1.35, 0.02)  sent=1152  window=(1, 1) mode=0
+[20.2] explode
+== launcher stopping: terminated by Steam or the system at 23:39:44 ==
