@@ -108,3 +108,13 @@ build 2026-11-10.4  t=9  fps=72  alive  feet L:none R:none  head=1.36  players=1
 build 2026-11-10.4  t=10  fps=72  alive  feet L:none R:none  head=1.32  players=1  last: sender 4 opened: true  frame=712  cam=(-0.07, 1.32, 0.18)  sent=568
 [10.5] launch iamagamer
 build 2026-11-10.4  t=11  fps=72  flying  feet L:none R:none  head=1.31  players=1  last: launch iamagamer  frame=785  cam=(-0.07, 1.33, 0.16)  sent=628
+build 2026-11-10.4  t=12  fps=72  flying  feet L:none R:none  head=1.31  players=1  last: launch iamagamer  frame=858  cam=(0.0, 1.38, 0.05)  sent=688
+  left_hand poses: ["default=missing", "aim=missing", "grip=missing", "palm=missing"]  profile: /interaction_profiles/none
+  right_hand poses: ["default=missing", "aim=missing", "grip=missing", "palm=missing"]  profile: /interaction_profiles/none
+[12.9] explode
+build 2026-11-10.4  t=13  fps=66  gone  feet L:none R:none  head=1.31  players=1  last: explode  frame=925  cam=(0.0, 1.36, 0.04)  sent=740
+build 2026-11-10.4  t=14  fps=71  gone  feet L:none R:none  head=1.31  players=1  last: explode  frame=997  cam=(0.0, 1.33, 0.02)  sent=800
+build 2026-11-10.4  t=15  fps=72  alive  feet L:none R:none  head=1.33  players=1  last: explode  frame=1070  cam=(0.01, 1.33, 0.02)  sent=856
+[15.7] launch iamagamer
+build 2026-11-10.4  t=16  fps=72  flying  feet L:none R:none  head=1.33  players=1  last: launch iamagamer  frame=1143  cam=(0.01, 1.33, 0.02)  sent=916
+build 2026-11-10.4  t=17  fps=72  flying  feet L:none R:none  head=1.33  players=1  last: launch iamagamer  frame=1216  cam=(0.01, 1.33, 0.02)  sent=972
