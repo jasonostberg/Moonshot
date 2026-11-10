@@ -9,7 +9,7 @@
 #   ./play.sh --update-only      update without starting the game
 #   MOONSHOT_NO_UPDATE=1         skip the update check
 
-LAUNCHER_VERSION=4
+LAUNCHER_VERSION=5
 # Steam preloads its overlay into every program started from here; keep that for the game
 # only, so the small helper commands below stay quiet.
 GAME_PRELOAD="$LD_PRELOAD"
@@ -92,6 +92,12 @@ update() {
     rm -rf "$TMP"
     MOONSHOT_RELAUNCHED=1 exec sh "$DIR/play.sh" "$@"
   fi
+  # library artwork, fetched only when it changes
+  if fetch "$RAW/ART_VERSION" "$TMP/ART_VERSION" 2>/dev/null && ! cmp -s "$TMP/ART_VERSION" "$DIR/art/ART_VERSION"; then
+    mkdir -p "$TMP/art" && OKART=1
+    for f in capsule header hero logo icon; do fetch "$RAW/art/$f.png" "$TMP/art/$f.png" 2>/dev/null || OKART=0; done
+    if [ "$OKART" = 1 ]; then mkdir -p "$DIR/art" && cp "$TMP/art/"*.png "$DIR/art/" && cp "$TMP/ART_VERSION" "$DIR/art/ART_VERSION"; fi
+  fi
   NEW="$(cat "$TMP/VERSION")"
   OLD="$(cat "$DIR/VERSION" 2>/dev/null)"
   if [ "$NEW" = "$OLD" ] && [ -x "$BIN" ]; then return 0; fi
@@ -114,6 +120,42 @@ rm -rf "$DIR/.update"
 [ "$1" = "--update-only" ] && exit 0
 if [ ! -x "$BIN" ]; then echo "moonshot: no build installed yet and the download failed" >&2; exit 1; fi
 
+# ---------------------------------------------------------------- library artwork
+# Steam looks for custom artwork for a non-Steam game in its grid folder, named after the
+# shortcut's ID, which Steam passes to us as SteamAppId. Copying the images there gives the
+# library entry its capsule, banner and logo. Steam shows them after it next restarts.
+ART_NOTE="none"
+put() { [ -f "$1" ] || return 0; cmp -s "$1" "$2" 2>/dev/null || { cp "$1" "$2" && ART_NOTE="installed"; }; }
+install_art() {
+  [ -f "$DIR/art/capsule.png" ] || return 0
+  case "$SteamAppId" in ''|0|*[!0-9]*) ID="" ;; *) ID="$SteamAppId" ;; esac
+  if [ -n "$ID" ]; then
+    ART_NOTE="up to date"
+    for C in "$HOME"/.local/share/Steam/userdata/*/config "$HOME"/.steam/steam/userdata/*/config; do
+      [ -d "$C" ] || continue
+      mkdir -p "$C/grid" || continue
+      put "$DIR/art/capsule.png" "$C/grid/${ID}p.png"
+      put "$DIR/art/header.png"  "$C/grid/${ID}.png"
+      put "$DIR/art/hero.png"    "$C/grid/${ID}_hero.png"
+      put "$DIR/art/logo.png"    "$C/grid/${ID}_logo.png"
+    done
+  fi
+  # a desktop entry with the proper name, description and icon
+  APPS="$HOME/.local/share/applications"
+  ENTRY="[Desktop Entry]
+Type=Application
+Name=Moonshot Nutcracker
+Comment=Multiplayer VR kicking game. Kick first, fly later.
+Exec=\"$DIR/play.sh\"
+Icon=$DIR/art/icon.png
+Categories=Game;
+Terminal=false"
+  if mkdir -p "$APPS" 2>/dev/null && [ "$(cat "$APPS/moonshot-nutcracker.desktop" 2>/dev/null)" != "$ENTRY" ]; then
+    printf '%s\n' "$ENTRY" > "$APPS/moonshot-nutcracker.desktop"
+  fi
+}
+install_art
+
 # ---------------------------------------------------------------- run with diagnostics
 RUN_ID="$(date -u +%Y%m%d-%H%M%S)"
 ARGS="$(cat "$DIR/ARGS" 2>/dev/null | head -1)"
@@ -126,6 +168,7 @@ ARGS="$(cat "$DIR/ARGS" 2>/dev/null | head -1)"
   echo "steam: SteamAppId=$SteamAppId SteamGameId=$SteamGameId SteamDeck=$SteamDeck compat_tool=$STEAM_COMPAT_TOOL_PATHS"
   echo "openxr: XR_RUNTIME_JSON=$XR_RUNTIME_JSON  active_runtime=$(readlink -f "$HOME/.config/openxr/1/active_runtime.json" 2>/dev/null)"
   echo "gamescope vars: $(env | grep -i -E '^(GAMESCOPE|SDL_VIDEO|VK_|ENABLE_|MANGOHUD|LD_PRELOAD)' | tr '\n' ' ')"
+  echo "artwork: $ART_NOTE (shortcut id ${SteamAppId:-none})"
   echo "extra args from ARGS file: [$ARGS]   args from Steam: [$*]"
   echo "== game output =="
 } > "$LOG" 2>&1

@@ -13,6 +13,8 @@ for a in arm64 x86_64; do gzip -9 -c "$SRC/moonshot-nutcracker.$a" > "$W/moonsho
 printf '%s\n' "$VER" > "$W/VERSION"
 printf '%s\n' "$EXTRA" > "$W/ARGS"
 cp "$ROOT/play.sh" "$W/play.sh"
+mkdir -p "$W/art" && cp "$ROOT"/art/*.png "$W/art/"
+cat "$ROOT"/art/*.png | sha256sum | cut -d" " -f1 > "$W/ART_VERSION"
 cd "$W"
 git init -q -b builds
 git add -A
