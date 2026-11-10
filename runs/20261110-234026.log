@@ -95,3 +95,9 @@ WARNING: The requested V-Sync mode Disabled is not available. Falling back to V-
 [0.1] sender 3 opened: true
 [0.1] sender 4 opened: true
 build 2026-11-10.5  t=1  fps=59  alive  feet L:none R:none  head=1.36  players=1  last: sender 4 opened: true  frame=58  cam=(0.01, 1.36, 0.01)  sent=44  window=(1, 1) mode=0
+build 2026-11-10.5  t=2  fps=71  alive  feet L:none R:none  head=1.35  players=1  last: sender 4 opened: true  frame=130  cam=(0.03, 1.35, 0.02)  sent=104  window=(1, 1) mode=0
+  left_hand poses: ["default=missing", "aim=missing", "grip=missing", "palm=missing"]  profile: /interaction_profiles/none
+  right_hand poses: ["default=missing", "aim=missing", "grip=missing", "palm=missing"]  profile: /interaction_profiles/none
+build 2026-11-10.5  t=3  fps=72  alive  feet L:none R:none  head=1.35  players=1  last: sender 4 opened: true  frame=203  cam=(0.03, 1.35, 0.01)  sent=160  window=(1, 1) mode=0
+build 2026-11-10.5  t=4  fps=72  alive  feet L:none R:none  head=1.35  players=1  last: sender 4 opened: true  frame=276  cam=(0.02, 1.35, 0.01)  sent=220  window=(1, 1) mode=0
+== launcher stopping: terminated by Steam or the system at 23:40:33 ==
