@@ -14,7 +14,7 @@ const HIT_SPEED := 1.5
 const PORT0 := 47420
 const NPORTS := 8
 const NET_TAG := "mnc1"
-const BUILD := "2026-11-10.2"
+const BUILD := "2026-11-10.3"
 const BOT_GRACE := 8.0   # seconds before practice dummies start kicking back
 const ALIVE := 0
 const FLYING := 1
@@ -123,6 +123,18 @@ var opt_autokick := false
 var opt_shot := ""
 var log_t := 0.0
 var last_note := ""
+# diagnostics: where the main loop is, so a watchdog thread can report a hang
+var stage := "startup"
+var frame_no := 0
+var wd: Thread
+var wd_stop := false
+# switches for narrowing a problem down (set remotely through the ARGS file)
+var test_stall := false
+var no_net := false
+var no_bots := false
+var no_audio := false
+var no_labels := false
+var no_feet := false
 var debug3d: Label3D
 var frames := 0
 var beat_t := 0.0
@@ -196,6 +208,19 @@ func _ready() -> void:
 			opt_shot = arg.substr(7)
 		elif arg.begins_with("--peer="):
 			extra_peers.append(arg.substr(7))
+		elif arg == "--test-stall":
+			test_stall = true
+		elif arg == "--no-net":
+			no_net = true
+		elif arg == "--no-bots":
+			no_bots = true
+		elif arg == "--no-audio":
+			no_audio = true
+		elif arg == "--no-labels":
+			no_labels = true
+		elif arg == "--no-feet":
+			no_feet = true
+	log_system()
 	build_world()
 	build_audio()
 	build_hud()
@@ -243,6 +268,59 @@ func _ready() -> void:
 	start_xr()
 	start_net()
 	cam.current = true
+	if no_labels:
+		board3d.visible = false
+		debug3d.visible = false
+		me.tag.visible = false
+	wd = Thread.new()
+	wd.start(_watchdog)
+	note("ready")
+
+
+func _exit_tree() -> void:
+	wd_stop = true
+	if wd != null and wd.is_started():
+		wd.wait_to_finish()
+
+
+func _watchdog() -> void:
+	# runs beside the game; if the main loop stops advancing it says where it was
+	var seen := -1
+	var since := Time.get_ticks_msec()
+	var reported := 0
+	while not wd_stop:
+		OS.delay_msec(250)
+		var t := Time.get_ticks_msec()
+		if frame_no != seen:
+			if reported > 0:
+				print("RESUMED after %.1f s" % ((t - since) / 1000.0))
+			seen = frame_no
+			since = t
+			reported = 0
+		elif t - since > 3000 * (reported + 1):
+			reported += 1
+			print("STALL main loop stuck for %.0f s  frame=%d  stage=%s  last=%s" % [(t - since) / 1000.0, frame_no, stage, last_note])
+
+
+func log_system() -> void:
+	print("== Moonshot Nutcracker build %s ==" % BUILD)
+	print("args: ", OS.get_cmdline_args(), " user args: ", OS.get_cmdline_user_args())
+	print("os: %s / %s / %s   cpu: %s (%d threads)   arch: %s" % [OS.get_name(), OS.get_distribution_name(), OS.get_version(), OS.get_processor_name(), OS.get_processor_count(), Engine.get_architecture_name()])
+	print("gpu: %s / %s   api: %s   driver: %s   method: %s" % [RenderingServer.get_video_adapter_vendor(), RenderingServer.get_video_adapter_name(), RenderingServer.get_video_adapter_api_version(), RenderingServer.get_current_rendering_driver_name(), RenderingServer.get_current_rendering_method()])
+	print("display: %s   window: %s mode=%d   screens=%d   audio: %s" % [DisplayServer.get_name(), DisplayServer.window_get_size(), DisplayServer.window_get_mode(), DisplayServer.get_screen_count(), AudioServer.get_driver_name()])
+
+
+func log_xr() -> void:
+	print("xr interface: %s   initialized=%s   views=%d   target=%s" % [xr.get_name(), xr.is_initialized(), xr.get_view_count(), xr.get_render_target_size()])
+	print("xr system: ", xr.get_system_info())
+	print("xr refresh: ", xr.get("display_refresh_rate"), "   available: ", xr.call("get_available_display_refresh_rates"))
+	print("xr play area mode: ", xr.get_play_area_mode(), "   tracking status: ", xr.get_tracking_status())
+	for sig in ["session_begun", "session_visible", "session_focussed", "session_stopping", "session_loss_pending", "instance_exiting", "pose_recentered"]:
+		if xr.has_signal(sig):
+			xr.connect(sig, note.bind("xr signal: " + sig))
+	XRServer.tracker_added.connect(func(tn: StringName, type: int) -> void: note("tracker added: %s (type %d)" % [tn, type]))
+	XRServer.tracker_removed.connect(func(tn: StringName, type: int) -> void: note("tracker removed: %s (type %d)" % [tn, type]))
+	print("trackers at start: ", XRServer.get_trackers(XRServer.TRACKER_ANY).keys())
 
 
 func start_xr() -> void:
@@ -257,9 +335,11 @@ func start_xr() -> void:
 		hud.visible = false
 		hint.visible = false
 		origin.position = Vector3(me.x, 0, me.z)
+		log_xr()
 		note("xr started")
 	else:
 		in_vr = false
+		print("xr interface found: ", xr != null)
 		note("no headset, window mode")
 
 
@@ -397,6 +477,8 @@ func make_wav(dur: float, f: Callable) -> AudioStreamWAV:
 
 
 func build_audio() -> void:
+	if no_audio:
+		return
 	var lp := [0.0]
 	var streams := {
 		"swing": make_wav(0.14, func(_t: float, p: float) -> float:
@@ -422,6 +504,8 @@ func build_audio() -> void:
 
 
 func play(key: String, loud: bool) -> void:
+	if not sfx.has(key):
+		return
 	var pl: AudioStreamPlayer = sfx[key]
 	pl.volume_db = 0.0 if loud else -9.0
 	pl.play()
@@ -470,6 +554,8 @@ func make_ent(id: String, pname: String, hue: float, is_bot: bool) -> Ent:
 	e.tag.outline_modulate = C_NIGHT
 	e.tag.outline_size = 12
 	e.root.add_child(e.tag)
+	if no_labels:
+		e.tag.visible = false
 	var boot_mat := mat(C_MOON)
 	e.boot_l = mesh_node(box(Vector3(0.13, 0.12, 0.28)), boot_mat)
 	e.boot_r = mesh_node(box(Vector3(0.13, 0.12, 0.28)), boot_mat)
@@ -541,6 +627,8 @@ func spawn(e: Ent) -> void:
 
 
 func set_bots(on: bool) -> void:
+	if on and no_bots:
+		return
 	if on and bots.is_empty():
 		var names := ["Dummy Dave", "Crash Test Carl", "Practice Pete"]
 		for i in names.size():
@@ -718,7 +806,7 @@ func update_flight(e: Ent, dt: float) -> void:
 func toast(msg: String) -> void:
 	last_event = msg
 	toast3d.text = msg
-	toast3d.visible = true
+	toast3d.visible = not no_labels
 	toast_t = 2.6
 	board_dirty = true
 
@@ -744,6 +832,9 @@ func draw_board() -> void:
 
 func start_net() -> void:
 	my_id = "%08x%08x" % [randi(), randi()]
+	if no_net:
+		note("network off")
+		return
 	for i in NPORTS:
 		if udp.bind(PORT0 + i) == OK:
 			my_port = PORT0 + i
@@ -933,13 +1024,23 @@ func stick() -> Vector2:
 
 
 func update_vr(dt: float) -> void:
+	stage = "vr_head"
 	var head_local := cam.position
 	var hf := cam.global_transform.basis * Vector3.FORWARD
 	var hyaw := atan2(-hf.x, -hf.z)
-	var lf = find_foot("left")
-	src_l = _src
-	var rf = find_foot("right")
-	src_r = _src
+	stage = "vr_feet"
+	var lf = null
+	var rf = null
+	if not no_feet:
+		lf = find_foot("left")
+		if _src != src_l:
+			note("left foot source: " + _src)
+		src_l = _src
+		rf = find_foot("right")
+		if _src != src_r:
+			note("right foot source: " + _src)
+		src_r = _src
+	stage = "vr_move"
 	if lf != null:
 		me.fl = lf
 	if rf != null:
@@ -1066,8 +1167,14 @@ func _process(delta: float) -> void:
 		if toast_t <= 0.0:
 			toast3d.visible = false
 
+	if test_stall and now > 3.0:
+		test_stall = false
+		stage = "test_stall (deliberate 10 s hang)"
+		OS.delay_msec(10000)
+	stage = "net_rx"
 	net_receive()
 
+	stage = "player"
 	if me.st == ALIVE:
 		if in_vr:
 			update_vr(dt)
@@ -1136,8 +1243,10 @@ func _process(delta: float) -> void:
 			if in_vr:
 				origin.position = Vector3(me.x - cam.position.x, 0, me.z - cam.position.z)
 
+	stage = "net_tx"
 	net_send()
 
+	stage = "remote"
 	# other players: ease toward their last reported pose
 	var k := 1.0 - exp(-dt * 14.0)
 	for e in ents.values():
@@ -1154,11 +1263,15 @@ func _process(delta: float) -> void:
 			if e.st == GONE and e.gone_t > 6.0 and not e.saw_fly:
 				e.st = ALIVE
 				show_ent(e, true)
+	stage = "bots"
 	for b in bots:
 		update_bot(b, dt)
+	stage = "booms"
 	update_booms(dt)
+	stage = "board"
 	if board_dirty:
 		draw_board()
+	stage = "camera"
 
 	# flat-screen camera (the headset drives it in VR)
 	if not in_vr:
@@ -1171,6 +1284,7 @@ func _process(delta: float) -> void:
 			want.y = maxf(want.y, 1.5)
 			cam.look_at_from_position(cam.global_position.lerp(want, 0.2), me.b, Vector3.UP)
 
+	stage = "heartbeat"
 	frames += 1
 	beat_t += delta
 	if beat_t >= 1.0:
@@ -1179,8 +1293,10 @@ func _process(delta: float) -> void:
 		beat_t = 0.0
 		var states := ["alive", "flying", "gone"]
 		var line := "build %s  t=%.0f  fps=%.0f  %s  feet L:%s R:%s  head=%.2f  players=%d  last: %s" % [BUILD, now, fps, states[me.st], src_l, src_r, me.h, ents.size() + 1, last_note]
-		debug3d.text = line
-		print(line)
+		stage = "debug_label"
+		if not no_labels:
+			debug3d.text = line
+		print("%s  frame=%d  cam=%s" % [line, frame_no, cam.position.snappedf(0.01)])
 	if opt_log:
 		log_t += dt
 		if log_t > 2.0:
@@ -1190,3 +1306,6 @@ func _process(delta: float) -> void:
 		get_viewport().get_texture().get_image().save_png(opt_shot)
 		opt_shot = ""
 		get_tree().quit()
+	# everything after this until the next frame is the engine: rendering and the headset's frame timing
+	stage = "engine (render / headset frame wait)"
+	frame_no += 1

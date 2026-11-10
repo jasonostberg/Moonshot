@@ -20,6 +20,16 @@ While this repository is private, the headset needs a read-only token:
 
 `play.sh` checks the `builds` branch every time the game starts and installs a newer build if there is one. With no connection it starts the build already installed.
 
+## Diagnostics
+
+Every run writes `~/moonshot/last-run.log` on the headset: system details, a line per second from the game, and, if the game hangs, what each of its threads was waiting on.
+
+To have the log uploaded automatically to this repository's `logs` branch (under `runs/`), save a GitHub token once:
+
+    sh ~/moonshot/play.sh --set-log-token
+
+Use a fine-grained token limited to this repository with Contents set to read and write. The `logs` branch is public while the repository is public.
+
 ## Playing
 
 - Strap a controller to each ankle, or wear foot trackers.
