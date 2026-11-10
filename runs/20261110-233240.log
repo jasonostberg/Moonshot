@@ -145,3 +145,9 @@ build 2026-11-10.5  t=31  fps=72  flying  feet L:controller R:controller  head=1
 build 2026-11-10.5  t=32  fps=72  flying  feet L:controller R:controller  head=1.30  players=1  last: launch iamagamer  frame=2317  cam=(0.0, 1.34, 0.14)  sent=1852  window=(1, 1) mode=0
 [32.6] explode
 build 2026-11-10.5  t=33  fps=72  gone  feet L:controller R:controller  head=1.30  players=1  last: explode  frame=2390  cam=(-0.03, 1.38, 0.06)  sent=1912  window=(1, 1) mode=0
+build 2026-11-10.5  t=34  fps=72  alive  feet L:controller R:controller  head=1.34  players=1  last: explode  frame=2463  cam=(-0.09, 1.34, 0.14)  sent=1972  window=(1, 1) mode=0
+build 2026-11-10.5  t=35  fps=72  alive  feet L:controller R:controller  head=1.33  players=1  last: explode  frame=2536  cam=(-0.09, 1.33, 0.11)  sent=2028  window=(1, 1) mode=0
+build 2026-11-10.5  t=36  fps=72  alive  feet L:controller R:controller  head=1.32  players=1  last: explode  frame=2609  cam=(-0.09, 1.32, 0.11)  sent=2088  window=(1, 1) mode=0
+[36.9] launch iamagamer
+build 2026-11-10.5  t=37  fps=72  flying  feet L:controller R:controller  head=1.33  players=1  last: launch iamagamer  frame=2682  cam=(-0.09, 1.33, 0.11)  sent=2144  window=(1, 1) mode=0
+build 2026-11-10.5  t=38  fps=72  flying  feet L:controller R:controller  head=1.33  players=1  last: launch iamagamer  frame=2755  cam=(-0.09, 1.33, 0.11)  sent=2204  window=(1, 1) mode=0
