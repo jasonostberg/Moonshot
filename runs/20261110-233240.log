@@ -94,3 +94,10 @@ WARNING: The requested V-Sync mode Disabled is not available. Falling back to V-
 [0.1] sender 3 opened: true
 [0.1] sender 4 opened: true
 build 2026-11-10.5  t=1  fps=58  alive  feet L:none R:none  head=1.33  players=1  last: sender 4 opened: true  frame=58  cam=(0.08, 1.33, 0.14)  sent=44  window=(1, 1) mode=0
+build 2026-11-10.5  t=2  fps=72  alive  feet L:none R:none  head=1.33  players=1  last: sender 4 opened: true  frame=130  cam=(0.07, 1.33, 0.14)  sent=104  window=(1, 1) mode=0
+  left_hand poses: ["default=missing", "aim=missing", "grip=missing", "palm=missing"]  profile: /interaction_profiles/none
+  right_hand poses: ["default=missing", "aim=missing", "grip=missing", "palm=missing"]  profile: /interaction_profiles/none
+build 2026-11-10.5  t=3  fps=72  alive  feet L:none R:none  head=1.33  players=1  last: sender 4 opened: true  frame=203  cam=(0.08, 1.33, 0.14)  sent=160  window=(1, 1) mode=0
+build 2026-11-10.5  t=4  fps=72  alive  feet L:none R:none  head=1.32  players=1  last: sender 4 opened: true  frame=276  cam=(0.07, 1.32, 0.14)  sent=220  window=(1, 1) mode=0
+build 2026-11-10.5  t=5  fps=72  alive  feet L:none R:none  head=1.32  players=1  last: sender 4 opened: true  frame=349  cam=(0.09, 1.32, 0.13)  sent=280  window=(1, 1) mode=0
+build 2026-11-10.5  t=6  fps=72  alive  feet L:none R:none  head=1.32  players=1  last: sender 4 opened: true  frame=422  cam=(0.09, 1.32, 0.13)  sent=336  window=(1, 1) mode=0
