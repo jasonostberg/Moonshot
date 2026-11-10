@@ -94,3 +94,188 @@ WARNING: The requested V-Sync mode Disabled is not available. Falling back to V-
 [0.1] xr signal: session_visible
 WARNING: Object picking can't be used when stereo rendering, this will be turned off!
      at: _process_picking (scene/main/viewport.cpp:771)
+build 2026-11-10.3  t=1  fps=56  alive  feet L:none R:none  head=1.37  players=1  last: xr signal: session_visible  frame=55  cam=(-0.02, 1.37, -0.09)
+STALL main loop stuck for 3 s  frame=104  stage=net_tx  last=xr signal: session_visible
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+== thread dump (game reported a stall) at 23:22:09 ==
+pid 94876 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94880 != 94406, skipping destruction (fork without exec?)
+pid 94883 != 94406, skipping destruction (fork without exec?)
+  94470 moonshot-nutcra  State: R (running) wchan=0
+pid 94885 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94888 != 94406, skipping destruction (fork without exec?)
+pid 94891 != 94406, skipping destruction (fork without exec?)
+  94476 moonshot-nutcra  State: S (sleeping) wchan=futex_do_wait
+pid 94893 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94896 != 94406, skipping destruction (fork without exec?)
+pid 94900 != 94406, skipping destruction (fork without exec?)
+  94478 WorkerThread 0   State: S (sleeping) wchan=futex_do_wait
+pid 94902 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94905 != 94406, skipping destruction (fork without exec?)
+pid 94908 != 94406, skipping destruction (fork without exec?)
+  94479 WorkerThread 1   State: S (sleeping) wchan=futex_do_wait
+pid 94910 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94912 != 94406, skipping destruction (fork without exec?)
+pid 94917 != 94406, skipping destruction (fork without exec?)
+  94480 WorkerThread 2   State: S (sleeping) wchan=futex_do_wait
+pid 94919 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94921 != 94406, skipping destruction (fork without exec?)
+pid 94925 != 94406, skipping destruction (fork without exec?)
+  94481 WorkerThread 3   State: S (sleeping) wchan=futex_do_wait
+pid 94927 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94929 != 94406, skipping destruction (fork without exec?)
+pid 94932 != 94406, skipping destruction (fork without exec?)
+  94482 WorkerThread 4   State: S (sleeping) wchan=futex_do_wait
+pid 94936 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94938 != 94406, skipping destruction (fork without exec?)
+pid 94942 != 94406, skipping destruction (fork without exec?)
+  94483 WorkerThread 5   State: S (sleeping) wchan=futex_do_wait
+pid 94944 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94946 != 94406, skipping destruction (fork without exec?)
+pid 94949 != 94406, skipping destruction (fork without exec?)
+  94484 WorkerThread 6   State: S (sleeping) wchan=futex_do_wait
+pid 94953 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94955 != 94406, skipping destruction (fork without exec?)
+pid 94959 != 94406, skipping destruction (fork without exec?)
+  94485 WorkerThread 7   State: S (sleeping) wchan=futex_do_wait
+pid 94961 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94963 != 94406, skipping destruction (fork without exec?)
+pid 94966 != 94406, skipping destruction (fork without exec?)
+  94559 File Notifier    State: S (sleeping) wchan=poll_schedule_timeout.constprop.0
+pid 94968 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94972 != 94406, skipping destruction (fork without exec?)
+pid 94975 != 94406, skipping destruction (fork without exec?)
+  94560 TracingMuxer     State: S (sleeping) wchan=poll_schedule_timeout.constprop.0
+pid 94979 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94981 != 94406, skipping destruction (fork without exec?)
+pid 94984 != 94406, skipping destruction (fork without exec?)
+  94563 moonsho:disk$0   State: S (sleeping) wchan=futex_do_wait
+pid 94988 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 94991 != 94406, skipping destruction (fork without exec?)
+pid 94996 != 94406, skipping destruction (fork without exec?)
+  94565 moonsho:disk$0   State: S (sleeping) wchan=futex_do_wait
+pid 94998 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95001 != 94406, skipping destruction (fork without exec?)
+pid 95005 != 94406, skipping destruction (fork without exec?)
+  94566 moonshot-nutcra  State: S (sleeping) wchan=futex_do_wait
+pid 95007 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95011 != 94406, skipping destruction (fork without exec?)
+pid 95015 != 94406, skipping destruction (fork without exec?)
+  94568 async-io         State: S (sleeping) wchan=do_epoll_wait
+pid 95017 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95022 != 94406, skipping destruction (fork without exec?)
+pid 95025 != 94406, skipping destruction (fork without exec?)
+  94570 moonsh:traceq0   State: S (sleeping) wchan=futex_do_wait
+pid 95029 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95034 != 94406, skipping destruction (fork without exec?)
+pid 95037 != 94406, skipping destruction (fork without exec?)
+  94571 moonshot-nutcra  State: S (sleeping) wchan=futex_do_wait
+pid 95039 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95043 != 94406, skipping destruction (fork without exec?)
+pid 95047 != 94406, skipping destruction (fork without exec?)
+  94574 moonshot-nutcra  State: S (sleeping) wchan=poll_schedule_timeout.constprop.0
+pid 95049 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95051 != 94406, skipping destruction (fork without exec?)
+pid 95057 != 94406, skipping destruction (fork without exec?)
+  94575 moonshot-nutcra  State: S (sleeping) wchan=hrtimer_nanosleep
+STALL main loop stuck for 6 s  frame=104  stage=net_tx  last=xr signal: session_visible
+pid 95059 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95064 != 94406, skipping destruction (fork without exec?)
+pid 95067 != 94406, skipping destruction (fork without exec?)
+  94576 moonshot-nutcra  State: S (sleeping) wchan=hrtimer_nanosleep
+pid 95069 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95071 != 94406, skipping destruction (fork without exec?)
+pid 95077 != 94406, skipping destruction (fork without exec?)
+  94582 moonshot-nutcra  State: S (sleeping) wchan=hrtimer_nanosleep
+pid 95079 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95081 != 94406, skipping destruction (fork without exec?)
+pid 95085 != 94406, skipping destruction (fork without exec?)
+  94622 moonshot-nutcra  State: S (sleeping) wchan=futex_do_wait
+pid 95090 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95092 != 94406, skipping destruction (fork without exec?)
+pid 95098 != 94406, skipping destruction (fork without exec?)
+  94629 _watchdog        State: S (sleeping) wchan=hrtimer_nanosleep
+pid 95100 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95102 != 94406, skipping destruction (fork without exec?)
+pid 95105 != 94406, skipping destruction (fork without exec?)
+  94644 moonshot-nutcra  State: S (sleeping) wchan=futex_do_wait
+pid 95111 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95113 != 94406, skipping destruction (fork without exec?)
+pid 95116 != 94406, skipping destruction (fork without exec?)
+  94648 moonsho:disk$1   State: S (sleeping) wchan=futex_do_wait
+pid 95121 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95123 != 94406, skipping destruction (fork without exec?)
+pid 95129 != 94406, skipping destruction (fork without exec?)
+  94652 moonsho:disk$2   State: S (sleeping) wchan=futex_do_wait
+pid 95131 != 94406, skipping destruction (fork without exec?)
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+pid 95133 != 94406, skipping destruction (fork without exec?)
+pid 95136 != 94406, skipping destruction (fork without exec?)
+  94655 moonsho:disk$3   State: S (sleeping) wchan=futex_do_wait
+== gdb backtrace ==
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_64/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (cannot open shared object file): ignored.
+ERROR: ld.so: object '/home/steamos/.local/share/Steam/ubuntu12_32/gameoverlayrenderer.so' from LD_PRELOAD cannot be preloaded (wrong ELF class: ELFCLASS32): ignored.
+ptrace: Operation not permitted.
+== end thread dump ==
