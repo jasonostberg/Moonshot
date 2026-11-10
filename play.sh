@@ -9,7 +9,11 @@
 #   ./play.sh --update-only      update without starting the game
 #   MOONSHOT_NO_UPDATE=1         skip the update check
 
-LAUNCHER_VERSION=3
+LAUNCHER_VERSION=4
+# Steam preloads its overlay into every program started from here; keep that for the game
+# only, so the small helper commands below stay quiet.
+GAME_PRELOAD="$LD_PRELOAD"
+unset LD_PRELOAD
 DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO="jasonostberg/moonshot"
 RAW="${MOONSHOT_RAW:-https://raw.githubusercontent.com/$REPO/builds}"
@@ -131,7 +135,7 @@ SEP="--"
 for a in "$@"; do [ "$a" = "--" ] && SEP=""; done
 [ -n "$ARGS" ] || SEP=""
 # shellcheck disable=SC2086
-"$BIN" "$@" $SEP $ARGS >> "$LOG" 2>&1 &
+LD_PRELOAD="$GAME_PRELOAD" "$BIN" "$@" $SEP $ARGS >> "$LOG" 2>&1 &
 PID=$!
 
 dump_threads() { # what every thread of the game is doing; shows what a hung main thread is waiting on

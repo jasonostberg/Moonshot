@@ -14,7 +14,7 @@ const HIT_SPEED := 1.5
 const PORT0 := 47420
 const NPORTS := 8
 const NET_TAG := "mnc1"
-const BUILD := "2026-11-10.3"
+const BUILD := "2026-11-10.4"
 const BOT_GRACE := 8.0   # seconds before practice dummies start kicking back
 const ALIVE := 0
 const FLYING := 1
@@ -840,8 +840,13 @@ func start_net() -> void:
 			my_port = PORT0 + i
 			net_ok = true
 			break
-	if net_ok:
-		udp.set_broadcast_enabled(true)
+	note("network listening=%s port=%d" % [net_ok, my_port])
+	for iface in IP.get_local_interfaces():
+		var masked := []
+		for addr in iface.get("addresses", []):
+			var parts := str(addr).split(".")
+			masked.append("%s.%s.x.x" % [parts[0], parts[1]] if parts.size() == 4 else "v6")
+		print("net interface %s: %s" % [iface.get("name", "?"), masked])
 
 
 func r2(v: float) -> float:
@@ -865,6 +870,25 @@ var _targets: PackedStringArray = []
 var _targets_t := -100.0
 
 
+# Sending goes through one non-blocking socket per destination. A plain PacketPeerUDP send
+# retries forever when the system says "try again", and a network interface that never
+# transmits fills the send buffer and triggers exactly that, hanging the whole game.
+# With a socket per destination, a dead interface can only drop its own packets.
+var senders := {}
+var sent_count := 0
+
+
+func sender_for(ip: String) -> ENetConnection:
+	if senders.has(ip):
+		return senders[ip]
+	var h := ENetConnection.new()
+	if h.create_host_bound("*", 0, 1) != OK:
+		h = null
+	senders[ip] = h
+	note("sender %d opened: %s" % [senders.size(), h != null])
+	return h
+
+
 func net_send() -> void:
 	if not net_ok or now - last_send < 0.066:
 		return
@@ -880,12 +904,17 @@ func net_send() -> void:
 		"kv": kvictim, "ks": kseq,
 	})
 	for ip in _targets:
-		for i in NPORTS:
-			var port := PORT0 + i
-			if ip == "127.0.0.1" and port == my_port:
-				continue
-			if udp.set_dest_address(ip, port) == OK:
-				udp.put_packet(pkt)
+		var h := sender_for(ip)
+		if h == null:
+			continue
+		if ip == "127.0.0.1":
+			# several copies on one machine (testing) listen on neighbouring ports
+			for i in NPORTS:
+				if PORT0 + i != my_port:
+					h.socket_send(ip, PORT0 + i, pkt)
+		else:
+			h.socket_send(ip, PORT0, pkt)
+		sent_count += 1
 
 
 func nums(v, count: int) -> bool:
@@ -1296,7 +1325,16 @@ func _process(delta: float) -> void:
 		stage = "debug_label"
 		if not no_labels:
 			debug3d.text = line
-		print("%s  frame=%d  cam=%s" % [line, frame_no, cam.position.snappedf(0.01)])
+		print("%s  frame=%d  cam=%s  sent=%d" % [line, frame_no, cam.position.snappedf(0.01), sent_count])
+		if in_vr and (src_l == "none" or src_r == "none") and int(now) % 5 == 1:
+			for tn in ["left_hand", "right_hand"]:
+				var t := XRServer.get_tracker(tn) as XRPositionalTracker
+				var info := []
+				if t != null:
+					for pn in ["default", "aim", "grip", "palm"]:
+						var ps := t.get_pose(pn)
+						info.append("%s=%s" % [pn, "missing" if ps == null else ("tracked" if ps.has_tracking_data else "no data")])
+				print("  %s poses: %s  profile: %s" % [tn, info, t.profile if t != null else "no tracker"])
 	if opt_log:
 		log_t += dt
 		if log_t > 2.0:
