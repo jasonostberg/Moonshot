@@ -1,0 +1,89 @@
+== launcher v5  run 20261110-233920 ==
+installed build: 2026-11-10.5   update check: ok   arch: arm64
+kernel: Linux 6.18.0-ge66bc2ca6f8c aarch64
+os: PRETTY_NAME="SteamOS" BUILD_ID=20261007.6125817 VARIANT_ID="vr" VERSION_ID=0.4.5 
+session: XDG_SESSION_TYPE=x11 WAYLAND_DISPLAY= DISPLAY=:1 XDG_CURRENT_DESKTOP=gamescope
+steam: SteamAppId=2166736331 SteamGameId=9306061680733585408 SteamDeck=1 compat_tool=
+openxr: XR_RUNTIME_JSON=  active_runtime=/opt/steamvr/steamxr_linuxarm64.json
+gamescope vars: ENABLE_VK_LAYER_VALVE_steam_overlay_1=1 GAMESCOPE_WAYLAND_DISPLAY=gamescope-0 GAMESCOPE_SESSION_TARGET=gamescope-session.target SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0 VK_INSTANCE_LAYERS=VK_LAYER_VALVE_rpo:VK_LAYER_VALVE_fdm_injection vk_xwayland_wait_ready=false MANGOHUD_CONFIGFILE=/run/user/1000/gamescope-mangoapp-XXoTnm25 VK_VRAM_REPORT_LIMIT_HEAP_SIZE=4096 ENABLE_VK_LAYER_VALVE_steam_fossilize_1=1 ENABLE_MESA_VRAM_REPORT_LIMIT=1 ENABLE_GAMESCOPE_WSI=1 GAMESCOPE_LIMITER_FILE=/run/user/1000/gamescope-limiter-XXjbkgbw vk_khr_present_wait=true VK_VRAM_REPORT_LIMIT_DEVICE_ID=0x5143:0x43051401 VK_APIDUMP_LOG_FILENAME=/tmp/vk_apidump_log.txt vk_wsi_force_swapchain_to_current_extent=false 
+artwork: installed (shortcut id 2166736331)
+extra args from ARGS file: []   args from Steam: []
+== game output ==
+Godot Engine v4.6.1.stable.official.14d19694e - https://godotengine.org
+fdm_injection: XR layer loaded
+Error [GENERAL | xrCreateInstance | OpenXR-Loader] : LoaderInstance::CreateInstance chained CreateInstance call failed
+Error [GENERAL | xrCreateInstance | OpenXR-Loader] : xrCreateInstance failed
+fdm_injection: XR layer loaded
+OpenXR: Created instance for OpenXR 1.0.54
+OpenXR: Running on OpenXR runtime:  SteamVR/OpenXR   2.18.2
+OpenXR: XrGraphicsRequirementsVulkan2KHR:
+ - minApiVersionSupported:  1.0.0
+ - maxApiVersionSupported:  1.2.0
+ATTENTION: default value of option vk_wsi_force_swapchain_to_current_extent overridden by environment.
+[Gamescope WSI] Application info:
+  pApplicationName: Moonshot Nutcracker
+  applicationVersion: 0
+  pEngineName: Godot Engine
+  engineVersion: 16801793
+  apiVersion: 4202496
+[Gamescope WSI] Executable name: moonshot-nutcracker.arm64
+ATTENTION: default value of option vk_wsi_force_swapchain_to_current_extent overridden by environment.
+[Gamescope WSI] Application info:
+  pApplicationName: steamvr_vrclient_interop
+  applicationVersion: 1
+  pEngineName: (null)
+  engineVersion: 1
+  apiVersion: 4194304
+[Gamescope WSI] Creating Gamescope surface: xid: 0x800002
+[Gamescope WSI] Atom of T was wrong type. Expected XCB_ATOM_CARDINAL.
+[Gamescope WSI] Made gamescope surface for xid: 0x800002
+[Gamescope WSI] Surface state:
+  steam app id:                  2166736331
+  window xid:                    0x800002
+  wayland surface res id:        6
+  layer client flags:            0x0
+  server hdr output enabled:     false
+  hdr formats exposed to client: false
+[Gamescope WSI] Forcing on VK_EXT_swapchain_maintenance1.
+Fossilize INFO: Overriding serialization path: "/home/steamos/.local/share/Steam/steamapps/shadercache/2166736331/fozpipelinesv6/steamapprun_pipeline_cache".
+Vulkan 1.4.362 - Forward Mobile - Using Device #0: Qualcomm - Turnip Adreno (TM) 750
+
+[Gamescope WSI] Creating swapchain for xid: 0x800002 - oldSwapchain: (nil) - provided minImageCount: 3 - minImageCount: 3 - format: VK_FORMAT_B8G8R8A8_UNORM - colorspace: VK_COLOR_SPACE_SRGB_NONLINEAR_KHR - flip: true
+[Gamescope WSI] Created swapchain for xid: 0x800002 swapchain: 0x36529580 - imageCount: 3
+== Moonshot Nutcracker build 2026-11-10.5 ==
+args: [] user args: []
+ERROR: Couldn't get the CPU model. Returning an empty string.
+   at: get_processor_name (platform/linuxbsd/os_linuxbsd.cpp:221)
+os: Linux / SteamOS / holo   cpu:  (8 threads)   arch: arm64
+gpu: Qualcomm / Turnip Adreno (TM) 750   api: 1.4.362   driver: vulkan   method: mobile
+display: X11   window: (1280, 720) mode=0   screens=1   audio: PulseAudio
+window before: size=(1280, 720) mode=0
+[0.0] window mode: tiny
+xr interface: OpenXR   initialized=true   views=2   target=(1728.0, 1728.0)
+xr system: { &"XRRuntimeName": "SteamVR/OpenXR", &"XRRuntimeVersion": "2.18.2", &"OpenXRSystemName": "SteamVR/OpenXR : cv", &"OpenXRVendorID": 10462 }
+xr refresh: 72.0   available: [72.0]
+xr play area mode: 2   tracking status: 57
+trackers at start: [&"left_hand", &"right_hand", &"/user/vive_tracker_htcx/role/left_foot", &"/user/vive_tracker_htcx/role/right_foot", &"/user/vive_tracker_htcx/role/left_shoulder", &"/user/vive_tracker_htcx/role/right_shoulder", &"/user/vive_tracker_htcx/role/left_elbow", &"/user/vive_tracker_htcx/role/right_elbow", &"/user/vive_tracker_htcx/role/left_knee", &"/user/vive_tracker_htcx/role/right_knee", &"/user/vive_tracker_htcx/role/waist", &"/user/vive_tracker_htcx/role/chest", &"/user/vive_tracker_htcx/role/camera", &"/user/vive_tracker_htcx/role/keyboard", &"/user/vive_tracker_htcx/role/left_wrist", &"/user/vive_tracker_htcx/role/right_wrist", &"/user/vive_tracker_htcx/role/left_ankle", &"/user/vive_tracker_htcx/role/right_ankle", &"head"]
+[0.0] xr started
+[0.0] network listening=true port=47420
+net interface wlanap: ["10.35.x.x", "v6"]
+net interface wlan0: ["192.168.x.x"]
+net interface lo: ["127.0.x.x", "v6"]
+[0.0] ready
+[0.0] xr signal: session_begun
+[0.1] left foot source: none
+[0.1] right foot source: none
+fdm_injection: added swapchain size 1728 (1 total sizes)
+[Gamescope WSI] Destroying swapchain: 0x36529580
+[Gamescope WSI] Destroyed swapchain: 0x36529580
+WARNING: The requested V-Sync mode Disabled is not available. Falling back to V-Sync mode Enabled.
+     at: swap_chain_resize (drivers/vulkan/rendering_device_driver_vulkan.cpp:3444)
+[Gamescope WSI] Creating swapchain for xid: 0x800002 - oldSwapchain: (nil) - provided minImageCount: 3 - minImageCount: 3 - format: VK_FORMAT_B8G8R8A8_UNORM - colorspace: VK_COLOR_SPACE_SRGB_NONLINEAR_KHR - flip: true
+[Gamescope WSI] Created swapchain for xid: 0x800002 swapchain: 0x36529490 - imageCount: 3
+[0.1] xr signal: session_synchronized
+[0.1] xr signal: session_visible
+[0.1] sender 1 opened: true
+[0.1] sender 2 opened: true
+[0.1] sender 3 opened: true
+[0.1] sender 4 opened: true
+build 2026-11-10.5  t=1  fps=59  alive  feet L:none R:none  head=1.34  players=1  last: sender 4 opened: true  frame=59  cam=(-0.01, 1.34, 0.02)  sent=44  window=(1, 1) mode=0
