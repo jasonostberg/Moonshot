@@ -14,7 +14,7 @@ const HIT_SPEED := 1.5
 const PORT0 := 47420
 const NPORTS := 8
 const NET_TAG := "mnc1"
-const BUILD := "2026-11-10.5"
+const BUILD := "2026-11-10.6"
 const BOT_GRACE := 8.0   # seconds before practice dummies start kicking back
 const ALIVE := 0
 const FLYING := 1
@@ -24,6 +24,27 @@ const C_NIGHT := Color("0d0f2b")
 const C_MOON := Color("f4e8c1")
 const C_LAMP := Color("ffb23e")
 const C_HIT := Color("ff4d6d")
+
+
+class Toad:
+	var node: Node3D
+	var x := 0.0
+	var z := 0.0
+	var y := 0.0
+	var fx := 0.0
+	var fz := 0.0
+	var tx := 0.0
+	var tz := 0.0
+	var hop_t := -1.0
+	var hop_len := 0.4
+	var hop_h := 0.3
+	var wait := 1.0
+	var st := 0
+	var fly_t := 0.0
+	var gone_t := 0.0
+	var a := Vector3.ZERO
+	var b := Vector3.ZERO
+	var c := Vector3.ZERO
 
 
 class Ent:
@@ -93,6 +114,7 @@ var me: Ent
 var ents := {}          # id -> Ent, other players
 var bots: Array[Ent] = []
 var booms := []
+var toads: Array[Toad] = []
 var craters := []
 var now := 0.0
 
@@ -131,6 +153,7 @@ var wd_stop := false
 # switches for narrowing a problem down (set remotely through the ARGS file)
 var test_stall := false
 var window_mode := "tiny"   # how the flat desktop window is put away in VR: tiny, min, keep
+var no_toads := false
 var no_net := false
 var no_bots := false
 var no_audio := false
@@ -213,6 +236,8 @@ func _ready() -> void:
 			window_mode = arg.substr(9)
 		elif arg == "--test-stall":
 			test_stall = true
+		elif arg == "--no-toads":
+			no_toads = true
 		elif arg == "--no-net":
 			no_net = true
 		elif arg == "--no-bots":
@@ -267,6 +292,8 @@ func _ready() -> void:
 	me = make_ent("me", pname.substr(0, 14), randf(), false)
 	spawn(me)
 	set_bots(true)
+	if not no_toads:
+		build_toads()
 
 	start_xr()
 	start_net()
@@ -375,48 +402,126 @@ func note(msg: String) -> void:
 	print("[%.1f] %s" % [now, msg])
 
 
+func prop(mesh: Mesh, col: Color, pos: Vector3, yaw := 0.0, unshaded := false) -> MeshInstance3D:
+	var m := mesh_node(mesh, mat(col, unshaded, unshaded))
+	m.position = pos
+	m.rotation.y = yaw
+	return m
+
+
+func tube(radius: float, height: float) -> CylinderMesh:
+	var m := CylinderMesh.new()
+	m.top_radius = radius
+	m.bottom_radius = radius
+	m.height = height
+	m.radial_segments = 12
+	m.rings = 1
+	return m
+
+
 func build_world() -> void:
+	# a freight yard at dusk: rust, concrete, floodlights, haze on the horizon
+	var sky_mat := ProceduralSkyMaterial.new()
+	sky_mat.sky_top_color = Color("171c2e")
+	sky_mat.sky_horizon_color = Color("c96a3a")
+	sky_mat.sky_curve = 0.12
+	sky_mat.ground_bottom_color = Color("15120f")
+	sky_mat.ground_horizon_color = Color("8a4f33")
+	var sky := Sky.new()
+	sky.sky_material = sky_mat
 	var env := Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = C_NIGHT
+	env.background_mode = Environment.BG_SKY
+	env.sky = sky
 	env.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	env.ambient_light_color = Color("8fa3ff")
-	env.ambient_light_energy = 0.55
+	env.ambient_light_color = Color("b3907e")
+	env.ambient_light_energy = 0.6
+	env.fog_enabled = true
+	env.fog_light_color = Color("7d4b38")
+	env.fog_density = 0.006
+	env.fog_sky_affect = 0.0
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
 
 	var sun := DirectionalLight3D.new()
 	sun.light_color = C_MOON
-	sun.light_energy = 0.8
+	sun.light_energy = 0.7
+	sun.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_ONLY
 	add_child(sun)
 	sun.look_at_from_position(MOON, Vector3.ZERO, Vector3.UP)
+	var dusk := DirectionalLight3D.new()
+	dusk.light_color = Color("ff9a5c")
+	dusk.light_energy = 0.45
+	dusk.sky_mode = DirectionalLight3D.SKY_MODE_LIGHT_ONLY
+	add_child(dusk)
+	dusk.look_at_from_position(Vector3(60, 8, 30), Vector3.ZERO, Vector3.UP)
 	var lamp := OmniLight3D.new()
-	lamp.light_color = C_LAMP
+	lamp.light_color = Color("ffe2b0")
 	lamp.light_energy = 2.0
 	lamp.omni_range = 30.0
 	lamp.position = Vector3(0, 7, 0)
 	add_child(lamp)
 
-	var ground := mesh_node(disc(130.0, 0.02), mat(Color("1d4a3c")))
-	ground.position.y = -0.01
-	var chalk := mesh_node(disc(9.6, 0.02), mat(C_MOON, true))
-	chalk.position.y = 0.0
-	var dirt := mesh_node(disc(9.35, 0.02), mat(Color("7a6544")))
-	dirt.position.y = 0.01
+	# cracked concrete, with the ring painted on it in hazard yellow
+	mesh_node(disc(130.0, 0.02), mat(Color("4b4a49"))).position.y = -0.01
+	mesh_node(disc(9.6, 0.02), mat(Color("e0b020"))).position.y = 0.0
+	mesh_node(disc(9.25, 0.02), mat(Color("303137"))).position.y = 0.01
+	var stripe := box(Vector3(0.36, 0.02, 0.2))
+	var stripe_mat := mat(Color("1c1c1f"))
+	for i in 40:
+		var ang := float(i) / 40.0 * TAU
+		var sm := mesh_node(stripe, stripe_mat)
+		sm.position = Vector3(sin(ang) * 9.43, 0.012, cos(ang) * 9.43)
+		sm.rotation.y = ang + 0.6
 
-	var pole_mesh := CylinderMesh.new()
-	pole_mesh.top_radius = 0.07
-	pole_mesh.bottom_radius = 0.09
-	pole_mesh.height = 4.2
-	var pole_mat := mat(Color("2a2f66"))
-	var bulb_mat := mat(C_LAMP, true, true)
-	for i in 10:
-		var ang := float(i) / 10.0 * TAU
-		var px := sin(ang) * 11.0
-		var pz := cos(ang) * 11.0
-		mesh_node(pole_mesh, pole_mat).position = Vector3(px, 2.1, pz)
-		mesh_node(ball(0.22), bulb_mat).position = Vector3(px, 4.3, pz)
+	# concrete barriers and oil drums around the ring
+	var barrier := box(Vector3(2.2, 0.8, 0.45))
+	for i in 12:
+		if i % 4 == 3:
+			continue
+		var ang := float(i) / 12.0 * TAU + 0.26
+		prop(barrier, Color("8a8782"), Vector3(sin(ang) * 11.0, 0.4, cos(ang) * 11.0), ang)
+	var drum := tube(0.3, 0.9)
+	var drum_cols := [Color("9c4a2a"), Color("2f5d7a"), Color("9c4a2a"), Color("b8a03a")]
+	for i in 14:
+		var ang := randf() * TAU
+		var rad := 11.8 + randf() * 2.2
+		prop(drum, drum_cols[i % 4], Vector3(sin(ang) * rad, 0.45, cos(ang) * rad))
+
+	# stacked shipping containers boxing the yard in
+	var crate := box(Vector3(6.0, 2.6, 2.4))
+	var crate_cols := [Color("8c3b2a"), Color("2d6a73"), Color("3a5a8c"), Color("a8782c"), Color("5c6b46")]
+	for i in 11:
+		var ang := float(i) / 11.0 * TAU + 0.15
+		if absf(angle_difference(ang, PI)) < 0.45:
+			continue   # leave the view to the moon open
+		var rad := 17.0 + (i % 3) * 2.5
+		var yaw := ang + PI / 2.0 + randf_range(-0.25, 0.25)
+		var base := Vector3(sin(ang) * rad, 1.3, cos(ang) * rad)
+		prop(crate, crate_cols[i % 5], base, yaw)
+		if i % 2 == 0:
+			prop(crate, crate_cols[(i + 2) % 5], base + Vector3(0, 2.6, 0), yaw + randf_range(-0.12, 0.12))
+
+	# floodlight towers
+	for i in 4:
+		var ang := float(i) / 4.0 * TAU + PI / 4.0
+		var px := sin(ang) * 13.0
+		var pz := cos(ang) * 13.0
+		prop(tube(0.12, 8.0), Color("3b3d42"), Vector3(px, 4.0, pz))
+		var head := prop(box(Vector3(1.8, 0.5, 0.3)), Color("2a2b2f"), Vector3(px, 8.1, pz), ang)
+		for j in 3:
+			var bulb := mesh_node(box(Vector3(0.42, 0.34, 0.06)), mat(Color("fff0c8"), true, true), head)
+			bulb.position = Vector3(-0.56 + j * 0.56, 0.0, -0.17)
+
+	# far off: smokestacks with warning lights, and a water tower
+	for sx in [-78.0, -58.0, 66.0]:
+		var h := 38.0 + absf(sx) * 0.15
+		prop(tube(2.6, h), Color("2b2726"), Vector3(sx, h / 2.0, -95.0))
+		prop(ball(0.9), Color("ff3b30"), Vector3(sx, h + 0.6, -95.0), 0.0, true)
+	prop(tube(4.5, 5.0), Color("5d4a3c"), Vector3(-34.0, 13.5, -40.0))
+	for lx in [-37.0, -31.0]:
+		for lz in [-43.0, -37.0]:
+			prop(tube(0.25, 11.0), Color("3b3d42"), Vector3(lx, 5.5, lz))
 
 	# moon with a generated crater texture
 	var img := Image.create(256, 128, false, Image.FORMAT_RGB8)
@@ -456,8 +561,10 @@ func build_world() -> void:
 	add_child(stars)
 
 	# scoreboard on the edge of the ring
-	var panel := mesh_node(box(Vector3(4.4, 3.0, 0.1)), mat(Color("171b4a"), true, true))
+	var panel := mesh_node(box(Vector3(4.4, 3.0, 0.1)), mat(Color("2a2420"), true, true))
 	panel.position = Vector3(0, 3.4, -11.6)
+	prop(tube(0.08, 3.6), Color("3b3d42"), Vector3(-2.0, 1.2, -11.65))
+	prop(tube(0.08, 3.6), Color("3b3d42"), Vector3(2.0, 1.2, -11.65))
 	board3d = Label3D.new()
 	board3d.font_size = 56
 	board3d.pixel_size = 0.0045
@@ -583,12 +690,73 @@ func make_ent(id: String, pname: String, hue: float, is_bot: bool) -> Ent:
 	e.root.add_child(e.tag)
 	if no_labels:
 		e.tag.visible = false
-	var boot_mat := mat(C_MOON)
+	var kind := int(id.substr(3)) % 5 if is_bot else int(floor(hue * 5.0)) % 5
+	var boot_col := dress(e, kind, hips, m, md)
+	var boot_mat := mat(boot_col)
 	e.boot_l = mesh_node(box(Vector3(0.13, 0.12, 0.28)), boot_mat)
 	e.boot_r = mesh_node(box(Vector3(0.13, 0.12, 0.28)), boot_mat)
 	e.leg_l = mesh_node(box(Vector3(0.1, 1.0, 0.1)), md)
 	e.leg_r = mesh_node(box(Vector3(0.1, 1.0, 0.1)), md)
 	return e
+
+
+func dress(e: Ent, kind: int, hips: MeshInstance3D, m: StandardMaterial3D, md: StandardMaterial3D) -> Color:
+	# five original yard workers; the player's own colour shows as an armband
+	var accent := Color.from_hsv(e.hue, 0.75, 0.95)
+	var band := mesh_node(box(Vector3(0.12, 0.09, 0.12)), mat(accent), e.arm_l)
+	band.position.y = 0.12
+	var boots := Color("2a2622")
+	match kind:
+		0:  # crane operator: hi-vis vest and hard hat
+			m.albedo_color = Color("e8742a")
+			md.albedo_color = Color("3a4658")
+			mesh_node(box(Vector3(0.44, 0.12, 0.26)), mat(Color("f3e24a")), e.torso).position.y = 0.05
+			var hat := mesh_node(ball(0.18), mat(Color("f2c81e")), e.head)
+			hat.scale = Vector3(1.0, 0.62, 1.0)
+			hat.position.y = 0.09
+			mesh_node(disc(0.23, 0.02), mat(Color("f2c81e")), e.head).position.y = 0.07
+			boots = Color("5a3a22")
+		1:  # night-shift cook: whites, red neckerchief, apron and a wide pleated hat
+			m.albedo_color = Color("dfe8f0")
+			md.albedo_color = Color("3c4048")
+			var white := mat(Color("e6eef6"))
+			mesh_node(tube(0.175, 0.06), mat(Color("3c4048")), e.head).position.y = 0.14
+			mesh_node(tube(0.17, 0.12), white, e.head).position.y = 0.22
+			var puff := mesh_node(ball(0.22), white, e.head)
+			puff.scale = Vector3(1.0, 0.4, 1.0)
+			puff.position.y = 0.3
+			mesh_node(tube(0.12, 0.06), mat(Color("c8322c")), e.head).position.y = -0.17
+			var apron := mesh_node(box(Vector3(0.34, 0.42, 0.02)), mat(Color("7f8a96")), hips)
+			apron.position = Vector3(0, 0.0, -0.126)
+			for by in [0.25, 0.1, -0.05]:
+				mesh_node(box(Vector3(0.04, 0.04, 0.02)), mat(Color("3c4048")), e.torso).position = Vector3(0.08, by, -0.125)
+		2:  # salvage diver: brass helmet
+			m.albedo_color = Color("24385c")
+			md.albedo_color = Color("1b2a45")
+			var brass := mat(Color("c08a3a"))
+			brass.metallic = 0.6
+			brass.roughness = 0.4
+			mesh_node(ball(0.23), brass, e.head)
+			var port := mesh_node(disc(0.11, 0.02), mat(Color("0f1a24")), e.head)
+			port.rotation.x = PI / 2.0
+			port.position = Vector3(0, 0.0, -0.225)
+			mesh_node(tube(0.21, 0.07), brass, e.head).position.y = -0.2
+			boots = Color("8a6a2a")
+		3:  # courier: cap and satchel
+			m.albedo_color = Color("2b8f86")
+			md.albedo_color = Color("5a4632")
+			mesh_node(tube(0.17, 0.09), mat(Color("1f5f59")), e.head).position.y = 0.13
+			mesh_node(box(Vector3(0.22, 0.02, 0.16)), mat(Color("1f5f59")), e.head).position = Vector3(0, 0.09, -0.2)
+			mesh_node(box(Vector3(0.1, 0.24, 0.28)), mat(Color("7a5330")), hips).position = Vector3(0.25, 0.0, 0.0)
+		_:  # mechanic: coveralls, goggles, tool belt, ponytail
+			m.albedo_color = Color("7a4fa3")
+			md.albedo_color = Color("5d3b80")
+			mesh_node(ball(0.17), mat(Color("3a2418")), e.head).position = Vector3(0, 0.03, 0.03)
+			mesh_node(ball(0.08), mat(Color("3a2418")), e.head).position = Vector3(0, 0.02, 0.22)
+			mesh_node(box(Vector3(0.28, 0.07, 0.05)), mat(Color("23252b")), e.head).position = Vector3(0, 0.07, -0.15)
+			mesh_node(box(Vector3(0.42, 0.07, 0.27)), mat(Color("b8894a")), hips).position.y = 0.1
+			mesh_node(box(Vector3(0.05, 0.16, 0.05)), mat(Color("9aa0a8")), hips).position = Vector3(-0.2, 0.0, -0.13)
+	return boots
 
 
 func show_ent(e: Ent, on: bool) -> void:
@@ -826,6 +994,115 @@ func update_flight(e: Ent, dt: float) -> void:
 			explode(e.b, e == me)
 	elif e.st == GONE:
 		e.gone_t += dt
+
+
+# ---------------------------------------------------------------- tin toads
+
+func build_toads() -> void:
+	var tin := mat(Color("6f8f4a"))
+	tin.metallic = 0.5
+	tin.roughness = 0.45
+	var gold := mat(Color("d9a93a"))
+	gold.metallic = 0.7
+	gold.roughness = 0.35
+	for i in 7:
+		var t := Toad.new()
+		t.node = Node3D.new()
+		add_child(t.node)
+		var body := mesh_node(ball(0.15), tin, t.node)
+		body.scale = Vector3(1.0, 0.7, 1.25)
+		body.position.y = 0.11
+		mesh_node(ball(0.1), mat(Color("c9cf9a")), t.node).position = Vector3(0, 0.07, -0.06)
+		for sx in [-0.07, 0.07]:
+			mesh_node(ball(0.05), mat(Color("f4e8c1")), t.node).position = Vector3(sx, 0.2, -0.11)
+			mesh_node(ball(0.025), mat(Color("17130f"), true), t.node).position = Vector3(sx, 0.21, -0.15)
+			mesh_node(box(Vector3(0.05, 0.05, 0.16)), tin, t.node).position = Vector3(sx * 2.2, 0.04, 0.08)
+		# wind-up key on the back
+		mesh_node(tube(0.015, 0.12), gold, t.node).position = Vector3(0, 0.24, 0.06)
+		mesh_node(box(Vector3(0.14, 0.08, 0.02)), gold, t.node).position = Vector3(0, 0.33, 0.06)
+		place_toad(t)
+		toads.append(t)
+
+
+func place_toad(t: Toad) -> void:
+	var ang := randf() * TAU
+	var rad := 1.0 + randf() * 7.5
+	t.x = sin(ang) * rad
+	t.z = cos(ang) * rad
+	t.y = 0.0
+	t.hop_t = -1.0
+	t.wait = 0.3 + randf() * 2.0
+	t.st = ALIVE
+	t.node.visible = true
+	t.node.scale = Vector3.ONE
+	t.node.rotation = Vector3(0, randf() * TAU, 0)
+	t.node.position = Vector3(t.x, 0, t.z)
+
+
+func update_toads(dt: float) -> void:
+	for t in toads:
+		if t.st == ALIVE:
+			if t.hop_t >= 0.0:
+				t.hop_t += dt
+				var k := t.hop_t / t.hop_len
+				if k >= 1.0:
+					t.x = t.tx
+					t.z = t.tz
+					t.y = 0.0
+					t.hop_t = -1.0
+					t.wait = 0.25 + randf() * 1.6
+				else:
+					t.x = lerpf(t.fx, t.tx, k)
+					t.z = lerpf(t.fz, t.tz, k)
+					t.y = sin(PI * k) * t.hop_h
+			else:
+				t.wait -= dt
+				if t.wait <= 0.0:
+					var ang := randf() * TAU
+					var dist := 0.5 + randf() * 1.3
+					var dest := Vector2(t.x + sin(ang) * dist, t.z + cos(ang) * dist)
+					if dest.length() > 8.8:
+						dest = dest.normalized() * 8.8
+					t.fx = t.x
+					t.fz = t.z
+					t.tx = dest.x
+					t.tz = dest.y
+					t.hop_t = 0.0
+					t.hop_len = 0.3 + dist * 0.16
+					t.hop_h = 0.22 + dist * 0.22
+					t.node.rotation.y = atan2(-(t.tx - t.x), -(t.tz - t.z))
+			var squash := 1.0 if t.hop_t >= 0.0 else 1.0 - 0.15 * clampf(0.25 - t.wait, 0.0, 0.25) * 4.0
+			t.node.scale = Vector3(2.0 - squash, squash, 2.0 - squash)
+			t.node.position = Vector3(t.x, t.y, t.z)
+			# a fast foot sends a toad the same way as a player
+			var c := Vector3(t.x, t.y + 0.13, t.z)
+			if me.st == ALIVE and ((me.vl > HIT_SPEED and me.fl.distance_to(c) < 0.3) or (me.vr > HIT_SPEED and me.fr.distance_to(c) < 0.3)):
+				t.st = FLYING
+				t.fly_t = 0.0
+				t.a = c
+				var d := (Vector3(t.x + (randf() - 0.5) * 30.0, 10.0 + randf() * 25.0, t.z + 60.0) - MOON).normalized()
+				t.b = MOON + d * MR
+				t.c = (t.a + t.b) * 0.5 + Vector3(0, 30, 0)
+				note("toad punted")
+				play("thwack", true)
+				buzz(0.6, 0.08)
+				toast("You punted a tin toad")
+		elif t.st == FLYING:
+			t.fly_t += dt
+			var p := minf(t.fly_t / 2.0, 1.0)
+			var q := p * p * (3.0 - 2.0 * p) * 0.35 + p * 0.65
+			t.node.position = t.a.lerp(t.c, q).lerp(t.c.lerp(t.b, q), q)
+			t.node.scale = Vector3.ONE * (1.0 + p * 9.0)
+			t.node.rotation = Vector3(t.fly_t * 11.0, t.fly_t * 7.0, 0)
+			if p >= 1.0:
+				t.st = GONE
+				t.gone_t = 0.0
+				t.node.visible = false
+				explode(t.b, false)
+		else:
+			t.gone_t += dt
+			if t.gone_t > 3.0:
+				place_toad(t)
 
 
 # ---------------------------------------------------------------- scoreboard
@@ -1322,6 +1599,8 @@ func _process(delta: float) -> void:
 	stage = "bots"
 	for b in bots:
 		update_bot(b, dt)
+	stage = "toads"
+	update_toads(dt)
 	stage = "booms"
 	update_booms(dt)
 	stage = "board"
